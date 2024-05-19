@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src='https://api.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.js'></script>
+    <link href='https://api.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.css' rel='stylesheet' />
+    
+    <!-- Add MapBox -->
+    <script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-directions/v4.3.1/mapbox-gl-directions.js"></script>
+    <link rel="stylesheet" href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-directions/v4.3.1/mapbox-gl-directions.css" type="text/css">
+
+    <link rel="stylesheet" href="style.css">
+    <title>Google Maps Clone</title>
+</head>
+<body>
+    
+
+    <div id='map'></div>
+    <div class="buttoncontainer">
+        <div id="inputContainer">
+            <input type="number" id="pathDistance" placeholder="Enter loop distance in km">
+        </div>
+        <button id="generatePathButton">Generate Path </button>
+
+
+        <!-- Rounded switch -->
+
+        <input id="loopCheckbox" class="switch" type="checkbox">
+    </div>
+    <a href="login.html"><img class="logo" src="https://i.ibb.co/WWpspBS/image-2024-05-18-235202428-removebg-preview.png" alt="Icon" ></a>
+
+    
+    <script src="app.js"></script>
+
+
+
+</body>
+</html>
