@@ -140,6 +140,9 @@ function errorLoc() {
 
 // Function to generate a biking loop of a specified distance
 function generatePath(distanceInKm) {
+    for (i = 0; i < directions.getWaypoints().length; i++)
+        directions.removeWaypoint(i)  // Clear waypoints
+
     noNeed = false
     
     targetDistance = distanceInKm
@@ -178,31 +181,46 @@ function generatePath(distanceInKm) {
 }
 
 function generateLoop(distanceInKm) {
+    
     targetDistance = distanceInKm / 3.5
     generatePath(targetDistance)
     
     // If generated path is close to 95% of targetDistance run the rest
-
     // Else, regenerate possible path
 
+    // Remove all waypoints
+    // Not sure why, but there are three waypoints if don't remove
+    // Probably something to do with setting the destination when generating path
+    for (i = 0; i < directions.getWaypoints().length; i++)
+        directions.removeWaypoint(i)  // Clear waypoints
+
+    // Create waypoints to form a right angle so that a loop is likely to be formed
+    // Assumes that longitude and latitude can be approximated as x and y coordinates on a 2d plane  
+
+    // Set waypoint at original destination
     wayPoint1 = directions.getDestination().geometry.coordinates
+    directions.addWaypoint(0, wayPoint1)
+
+    // Add second waypoint
     diffLong = wayPoint1[0] - directions.getOrigin().geometry.coordinates[0]
     diffLat = wayPoint1[1] - directions.getOrigin().geometry.coordinates[1]
-    wayPoint1[0] += diffLong
-    wayPoint1[1] -= diffLat
-
-    diffLat *= -1
-
-    wayPoint2 = [wayPoint1[0] - diffLong, wayPoint1[1] + diffLat]
+    // Slope and slope of perpendicular line
+    m1 = diffLat / diffLong
+    m2 = -1/m1
+    // Form a right angle with the waypoints
+    // The two waypoints should form a corner of a square
+    // diffLat is the "x-change" for waypoint2 because when right-triangle rotated 90 degrees, slope = -1/m
+    // slope = y / x
+    // new slope = -x / y
+    wayPoint2 = [wayPoint1[0] + diffLat, wayPoint1[1] + diffLat * m2]  // Make an entirely different array because you can't have the same reference
+    directions.addWaypoint(1, wayPoint2)
 
     targetDistance = distanceInKm
-    directions.addWaypoint(0, wayPoint1)
-    directions.addWaypoint(1, wayPoint2)
-    // directions.addWaypoint(1, wayPoint.geometry.coordinates.map((item) => {return item + Math.random() / 10}))
-
+    
     
     currentOrigin = directions.getOrigin()
     directions.setDestination(currentOrigin.geometry.coordinates)
+    console.log(directions.getWaypoints())
 }
 
 // Get references to input field and button
