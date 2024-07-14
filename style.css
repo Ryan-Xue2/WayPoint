@@ -19,7 +19,7 @@ body {
 
 #inputContainer {
     position: fixed;
-    bottom: 23%; /* Adjust this value to ensure it's above the button */
+    bottom: 17%; /* Adjust this value to ensure it's above the button */
     left: 20px;
     background-color: #f8f9fa; /* Light background color */
     padding: 10px 15px; /* Padding around the content */
@@ -43,7 +43,7 @@ body {
 
 #generatePathButton {
     position: fixed;
-    bottom: 15%; /* Distance from the bottom of the screen */
+    bottom: 10%; /* Distance from the bottom of the screen */
     left: 20px; /* Distance from the right side of the screen */
     padding: 15px 25px; /* Adjust padding for desired size */
     font-size: 16px; /* Adjust font size */
@@ -76,108 +76,74 @@ body {
     border-radius: 5px; /* Optional: rounded corners for the logo */
 }
 
-/* The switch - the box around the slider */
-.switch {
-    position: absolute;
-    display: inline-block;
-    width: 60px;
-    height: 34px;
-    z-index: 1000; /* Ensure it is above other elements */
+
+.loop-button {
+cursor: pointer;
+display: flex;
+align-items: center;
+width: 200px;
+height: 39px;
+background: gray;
+border-radius: 20px;
+
+
 }
 
-/* Hide default HTML checkbox */
-.switch input {
-    opacity: 0;
-    width: 0;
-    height: 0;
+.button-element {
+width: 100px;
+height: 39px;
+background: white;
+box-shadow: 3px 3px 2px rgba(0, 0, 0, 0.14);
+border-radius: 20px 0px 0px 20px;
+display: flex;
+justify-content: center;
+align-items: center; 
+transition: all 0.3s;
 }
 
-/* The slider */
-.slider {
-    position: absolute;
-    cursor: pointer;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 3%;
-    background-color: #ccc;
-    -webkit-transition: .4s;
-    transition: .4s;
-    z-index: 10; /* Ensure it is above other elements */
+#oneway {
+font-family: Arial;
+font-size: 14px;
+font-weight: normal;
+font-style: normal;
+letter-spacing: 0.2px;
+color: black;
 }
 
-.slider:before {
-    position: absolute;
-    content: "";
-    height: 26px;
-    width: 26px;
-    left: 4px;
-    bottom: 4px;
-    background-color: white;
-    -webkit-transition: .4s;
-    transition: .4s;
-    z-index: 1000; /* Ensure it is above other elements */
+#roundtrip {
+font-family: Arial;
+font-size: 14px;
+font-weight: normal;
+font-style: normal;
+letter-spacing: 0.2px;
+color: white;
+padding-left: 15px;
 }
 
-input:checked + .slider {
-    background-color: #2196F3;
-    z-index: 1000; /* Ensure it is above other elements */
+.loop-container {
+z-index: 5;
+position: fixed;
+bottom: 5%;
+left: 1%;
 }
 
-input:focus + .slider {
-    box-shadow: 0 0 1px #2196F3;
+#buttonHide {
+display: none;
 }
 
-input:checked + .slider:before {
-    -webkit-transform: translateX(26px);
-    -ms-transform: translateX(26px);
-    transform: translateX(26px);
+#exportButton{
+position: fixed;
+bottom: 3%; /* Distance from the bottom of the screen */
+right: 5%; /* Distance from the right side of the screen */
+padding: 15px 25px; /* Adjust padding for desired size */
+font-size: 16px; /* Adjust font size */
+font-weight: bold;
+color: #fff;
+background-color: green; /* Primary color */
+border: none;
+border-radius: 5px; /* Rounded corners */
+box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+cursor: pointer;
+transition: background-color 0.3s ease, transform 0.3s ease;
+z-index: 1000; /* Ensure it is above other elements */
 }
-
-/* Rounded sliders */
-.switch {
-    position: relative;
-    height: 1.5rem;
-    bottom: 100px;
-    left: 20px;
-    width: 3rem;
-    cursor: pointer;
-    appearance: none;
-    -webkit-appearance: none;
-    border-radius: 9999px;
-    background-color: rgba(100, 116, 139, 0.377);
-    transition: all .3s ease;
-  }
-  
-  .switch:checked {
-    background-color: rgba(236, 72, 153, 1);
-  }
-  
-  .switch::before {
-    position: absolute;
-    content: "";
-    left: calc(1.5rem - 1.6rem);
-    top: calc(1.5rem - 1.6rem);
-    display: block;
-    height: 1.6rem;
-    width: 1.6rem;
-    cursor: pointer;
-    border: 1px solid rgba(100, 116, 139, 0.527);
-    border-radius: 9999px;
-    background-color: rgba(255, 255, 255, 1);
-    box-shadow: 0 3px 10px rgba(100, 116, 139, 0.327);
-    transition: all .3s ease;
-  }
-  
-  .switch:hover::before {
-    box-shadow: 0 0 0px 8px rgba(0, 0, 0, .15)
-  }
-  
-  .switch:checked:hover::before {
-    box-shadow: 0 0 0px 8px rgba(236, 72, 153, .15)
-  }
-  
-  .switch:checked:before {
-    transform: translateX(100%);
-    border-color: rgba(236, 72, 153, 1);
-  }
