@@ -23,7 +23,8 @@ function setupMap(center){
             center: center, // starting position [lng, lat]
             zoom: 14, // starting zoom
         });
-        
+    
+
         directions = new MapboxDirections({
             accessToken: mapboxgl.accessToken,
             unit: 'metric',
@@ -31,7 +32,9 @@ function setupMap(center){
             geometries: 'geojson',
             alternatives: true,
             radiuses: 'infinite',
-
+            controls: {
+                profileSwitcher: false
+            }
         });
 
         
@@ -43,18 +46,7 @@ function setupMap(center){
     
         // TODO: Gets the map data in GeoJSON format when a route is found
         directions.on('route', (e) => {
-            // if (loopPath) {
-            //     routeDistance = e.route[0].distance / 1000
-            //     if (Math.abs(routeDistance-targetDistance) / targetDistance > 0.05) {
-            //         waypoint = directions.getWaypoints()[0]
-            //         directions.removeWaypoint(0)
-            //         directions.setDestination(waypoint.coords.longitude, waypoint.coords.latitude)
-            //         generateLoop(targetDistance)
-            //     }
-            //     else {
-            //         loopPath = false;
-            //     }
-            // }
+            savedRoute = e
             if (noNeed) {
                 return
             }
@@ -65,7 +57,7 @@ function setupMap(center){
             // alert('hi')
 
             // If loop mode, check loop % error 
-            let loopPath = loopToggle.checked
+            let loopPath = checkTripType()
             console.log("Looppath is: ", loopPath)
             
             if (loopPath){
@@ -81,52 +73,136 @@ function setupMap(center){
             else if (!loopPath) {
                 if (Math.abs(routeDistance-targetDistance) / targetDistance > 0.05) {
                     generatePath(targetDistance)
-                } 
+                }
             }
             
-            else {
-                noNeed = true;
-            }
-            // alert(e.route[0].distance)
-            // console.log(e)
-            // console.log(e.route)
-            // console.log(e.route[0].geometry)  // encoded polyline thingy  // https://developers.google.com/maps/documentation/utilities/polylineutility
-            
-            // longInit = 0
-            // latInit = 0
-            // longDest = -80
-            // latDest = 40
-            // if (directions.getWaypoints().length == 0) {
-            //     url = 'https://api.mapbox.com/directions/v5/mapbox/cycling/'+longInit+'%2C'+latInit+'%3B'+longDest+'%2C'+latDest+'.json?geometries=geojson&alternatives=true&steps=true&overview=full&language=en&access_token=pk.eyJ1IjoibWF0cm93eSIsImEiOiJjbHdjNm91aHYwdG9uMmpwNTcxeXhqeWNwIn0.TjvcVEr5Zyn7Gu2H3bSnmw'
-            // }
-            // else {
-            //     url = "https://api.mapbox.com/directions/v5/mapbox/cycling/-80.554%2C43.474%3B-80.5518977635979%2C43.42887542070156%3B-80.554%2C43.474.json?geometries=geojson&alternatives=true&steps=true&overview=full&language=en&access_token=pk.eyJ1IjoibWF0cm93eSIsImEiOiJjbHdjNm91aHYwdG9uMmpwNTcxeXhqeWNwIn0.TjvcVEr5Zyn7Gu2H3bSnmw"
-            // }
-            // fetch(url) 
-            //     .then(response => {
-            //         if (!response.ok) {
-            //             throw new Error(':(')
-            //         }
-            //         return response.json()
-            //     })
-            //     .then(data => {
-            //         console.log(data)
-            //         coords = data.routes[0].geometry.coordinates
-            //         sum = 0
-            //         for (i=0; i<coords.length;i++) {
-            //             // if (coords[0] == )
-            //             sum += coords[0] + coords[1]
-            //             // if (coords[0] )
-            //         }
-            //     })
+
+
+
         })
 }
+document.getElementById('exportButton').addEventListener('click', function() {
+    try {
+        if (savedRoute) {
+            beginDownload(savedRoute);
+        } else {
+            throw new ReferenceError('No route found to download');
+        }
+    } catch (error) {
+        alert("No route created");
+    }
+});
 
+function beginDownload(e) {
+    try{
+        // Decode the encoded polyline manually
+        const encodedPolyline = e.route[0].geometry;
+        const decodedCoordinates = decodePolyline(encodedPolyline);
+
+        // Convert decoded coordinates to GeoJSON LineString format
+        const routeGeoJSON = {
+            type: 'Feature',
+            properties: {},
+            geometry: {
+                type: 'LineString',
+                coordinates: decodedCoordinates
+            }
+        };
+
+        console.log("Route geometry (GeoJSON): ", routeGeoJSON);
+        const gpxData = geoJSONtoGPX(routeGeoJSON);
+        console.log("Route geometry (GPX): ", gpxData);
+        downloadGPX(gpxData)
+    }
+    catch(ex){
+        alert("No Route")
+    }
+}
+
+// Function to decode an encoded polyline to coordinates
+function decodePolyline(encoded) {
+    let index = 0;
+    const len = encoded.length;
+    const polyline = [];
+    let lat = 0;
+    let lng = 0;
+
+    while (index < len) {
+        let b;
+        let shift = 0;
+        let result = 0;
+
+        do {
+            b = encoded.charCodeAt(index++) - 63;
+            result |= (b & 0x1f) << shift;
+            shift += 5;
+        } while (b >= 0x20);
+
+        const dlat = ((result & 1) ? ~(result >> 1) : (result >> 1));
+        lat += dlat;
+
+        shift = 0;
+        result = 0;
+
+        do {
+            b = encoded.charCodeAt(index++) - 63;
+            result |= (b & 0x1f) << shift;
+            shift += 5;
+        } while (b >= 0x20);
+
+        const dlng = ((result & 1) ? ~(result >> 1) : (result >> 1));
+        lng += dlng;
+
+        const point = [lng / 1e5, lat / 1e5];
+        polyline.push(point);
+    }
+
+    return polyline;
+}
+
+function geoJSONtoGPX(geojson) {
+    const gpx = '<?xml version="1.0" encoding="UTF-8"?>\n<gpx version="1.1" creator="Your App">\n';
+    const points = geojson.geometry.coordinates.map(coord => `<wpt lat="${coord[1]}" lon="${coord[0]}"></wpt>`).join('\n');
+    return gpx + points + '\n</gpx>';
+}
+
+
+function downloadGPX(data) {
+    console.log("download triggered");
+
+    try {
+        let filename = prompt("Enter the file name for the GPX file:", "");
+        if (!filename) {
+            alert("File name is required");
+            return;
+        }
+
+        // Ensure the filename ends with .gpx
+        if (!filename.toLowerCase().endsWith('.gpx')) {
+            filename += '.gpx';
+        }
+
+        const blob = new Blob([data], { type: 'application/gpx+xml' });
+
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = filename;
+
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+
+        console.log("download finished");
+    } catch (error) {
+        console.error("Error downloading GPX:", error);
+    }
+}
 
 // Get the user's position
 navigator.geolocation.getCurrentPosition(successLoc, errorLoc, {
     enableHighAccuracy: true
 }) 
+
 function successLoc(position) {
     console.log(position)
     currentPosition = position
@@ -136,6 +212,7 @@ function errorLoc() {
     setupMap([127.510094,40.339851])
     alert("No Location Found")
 }
+
 
 
 // Function to generate a biking loop of a specified distance
@@ -234,7 +311,7 @@ generatePathButton.addEventListener('click', function() {
         directions.removeWaypoint(i)  // Clear waypoints
 
     const distanceInKm = parseFloat(pathDistanceInput.value); // Get the loop distance from input field
-    let loopPath = loopToggle.checked
+    let loopPath = checkTripType()
 
     if (!isNaN(distanceInKm) && distanceInKm > 0) {
         if (loopPath) {
@@ -248,30 +325,43 @@ generatePathButton.addEventListener('click', function() {
 });
 
 
-// Export GPX
+var loopbutton = document.getElementById('loopbutton-container')
+var oneway = document.getElementById('oneway')
+var roundtrip = document.getElementById('roundtrip')
+var buttonTrack = document.getElementById('toggle-loop-button')
 
-function convertGeoJSONtoGPX(geojson) {
-    let gpx = '<?xml version="1.0" encoding="UTF-8"?>\n';
-    gpx += '<gpx version="1.1" creator="Mapbox">\n';
-    gpx += '<trk><trkseg>\n';
+var where = document.getElementById('for-button')
 
-    geojson.coordinates.forEach(coord => {
-        gpx += `<trkpt lat="${coord[1]}" lon="${coord[0]}"></trkpt>\n`;
-    });
+var buttonState = true;
 
-    gpx += '</trkseg></trk>\n';
-    gpx += '</gpx>';
+loopbutton.addEventListener('click', function(){
+  if (buttonState) {
+    document.getElementById("toggle-loop-button").style.transform = "translateX(100px)"; 
+    buttonState = false;
+    oneway.innerText = 'Round Trip'
+    roundtrip.innerText = 'One Way'
+    roundtrip.style.transform = "translateX(-90px)";
+    where.value = 'roundtrip'
+    buttonTrack.style.borderRadius = "0px 20px 20px 0px";
+    
+  } else {
+    document.getElementById("toggle-loop-button").style.transform = "translateX(0px)";
+    buttonState = true;
+    oneway.innerText = 'One Way'
+    roundtrip.innerText = 'Round Trip'
+    roundtrip.style.transform = "translateX(0px)";
+    where.value = 'oneway'
+    buttonTrack.style.borderRadius = "20px 0px 0px 20px";
+  }
+    
+})
 
-    return gpx;
-}
 
-function downloadGPX(gpxData, filename) {
-    const blob = new Blob([gpxData], { type: 'application/gpx+xml' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = filename;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
+
+function checkTripType() {
+    if (where.value === 'roundtrip') {
+        return (loopPath == false) // One Way is active
+    } else {
+        return (loopPath == true); // Round Trip is active
+    }
 }
