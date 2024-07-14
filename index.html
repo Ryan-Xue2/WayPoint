@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-directions/v4.3.1/mapbox-gl-directions.css" type="text/css">
 
     <link rel="stylesheet" href="style.css">
-    <title>Google Maps Clone</title>
+    <title>Waypoint Map</title>
 </head>
 <body>
     
@@ -25,9 +25,17 @@
 
 
         <!-- Rounded switch -->
+        <div class="loop-container">
+            <div class="loop-button" id='loopbutton-container'>
+            <div id='toggle-loop-button' class="button-element">
+              <p id='oneway'>One Way</p>
+            </div>
+            <p id='roundtrip'>Round Trip</p>
+            <label id="buttonHide"><input id='for-button' type="text" name="method" value='oneway' /></label>
+          </div>
+          </div>
+          <button id="exportButton">Export GPX </button>
 
-        <input id="loopCheckbox" class="switch" type="checkbox">
-    </div>
     <a href="login.html"><img class="logo" src="https://i.ibb.co/WWpspBS/image-2024-05-18-235202428-removebg-preview.png" alt="Icon" ></a>
 
     
