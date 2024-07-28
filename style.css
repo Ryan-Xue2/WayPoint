@@ -1,0 +1,149 @@
+.test {
+    color: blue;
+}
+
+body {
+    margin: 0;
+    position: relative; /* Position the body relative to its containing block */
+    overflow-y: hidden;
+    overflow-x: hidden;
+}
+
+#map {
+    height: 100vh;
+    width: 100vw;
+    z-index: 1; /* Ensure the map is behind other elements */
+}
+
+
+
+#inputContainer {
+    position: fixed;
+    bottom: 17%; /* Adjust this value to ensure it's above the button */
+    left: 20px;
+    background-color: #f8f9fa; /* Light background color */
+    padding: 10px 15px; /* Padding around the content */
+    border-radius: 5px; /* Rounded corners */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+    display: flex;
+    align-items: center;
+    font-size: 16px;
+    color: #343a40; /* Text color */
+    z-index: 1000; /* Ensure it is above other elements */
+}
+
+#pathDistance {
+    width: 250px; /* Set a width for the input */
+    padding: 10px; /* Padding inside the input */
+    font-size: 16px; /* Font size for the input */
+    border: 1px solid #ced4da; /* Border color */
+    border-radius: 5px; /* Rounded corners */
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1); /* Inner shadow for a slight 3D effect */
+}
+
+#generatePathButton {
+    position: fixed;
+    bottom: 10%; /* Distance from the bottom of the screen */
+    left: 20px; /* Distance from the right side of the screen */
+    padding: 15px 25px; /* Adjust padding for desired size */
+    font-size: 16px; /* Adjust font size */
+    font-weight: bold;
+    color: #fff;
+    background-color: #007bff; /* Primary color */
+    border: none;
+    border-radius: 5px; /* Rounded corners */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    z-index: 1000; /* Ensure it is above other elements */
+}
+
+#generatePathButton:hover {
+    background-color: #0056b3; /* Darker shade for hover */
+    transform: scale(1.05); /* Slightly larger on hover */
+}
+
+
+
+
+.logo {
+    position: fixed;
+    top: 20px; /* Distance from the top of the screen */
+    right: 20px; /* Distance from the right side of the screen */
+    width: 70px; /* Adjust width for desired size */
+    height: auto; /* Maintain aspect ratio */
+    z-index: 1001; /* Ensure it is above other elements, including the input container */
+    border-radius: 5px; /* Optional: rounded corners for the logo */
+}
+
+
+.loop-button {
+cursor: pointer;
+display: flex;
+align-items: center;
+width: 200px;
+height: 39px;
+background: gray;
+border-radius: 20px;
+
+
+}
+
+.button-element {
+width: 100px;
+height: 39px;
+background: white;
+box-shadow: 3px 3px 2px rgba(0, 0, 0, 0.14);
+border-radius: 20px 0px 0px 20px;
+display: flex;
+justify-content: center;
+align-items: center; 
+transition: all 0.3s;
+}
+
+#oneway {
+font-family: Arial;
+font-size: 14px;
+font-weight: normal;
+font-style: normal;
+letter-spacing: 0.2px;
+color: black;
+}
+
+#roundtrip {
+font-family: Arial;
+font-size: 14px;
+font-weight: normal;
+font-style: normal;
+letter-spacing: 0.2px;
+color: white;
+padding-left: 15px;
+}
+
+.loop-container {
+z-index: 5;
+position: fixed;
+bottom: 5%;
+left: 1%;
+}
+
+#buttonHide {
+display: none;
+}
+
+#exportButton{
+position: fixed;
+bottom: 3%; /* Distance from the bottom of the screen */
+right: 5%; /* Distance from the right side of the screen */
+padding: 15px 25px; /* Adjust padding for desired size */
+font-size: 16px; /* Adjust font size */
+font-weight: bold;
+color: #fff;
+background-color: green; /* Primary color */
+border: none;
+border-radius: 5px; /* Rounded corners */
+box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+cursor: pointer;
+transition: background-color 0.3s ease, transform 0.3s ease;
+z-index: 1000; /* Ensure it is above other elements */
+}
