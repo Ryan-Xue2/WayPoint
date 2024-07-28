@@ -6,6 +6,9 @@ let targetDistance = -1;
 let routeDistance = -1;
 let noNeed = false;
 let loopPath = false;
+let wayPoint2
+
+const apiKey = 'IfBrLjGdiUn8HHect41C5cB6VtmDopDA';
 
 // let coords = [];
 // let sum = 0;
@@ -57,9 +60,7 @@ function setupMap(center){
             // alert('hi')
 
             // If loop mode, check loop % error 
-            let loopPath = checkTripType()
-            console.log("Looppath is: ", loopPath)
-            
+            let loopPath = checkTripType()            
             if (loopPath){
                 if (Math.abs(routeDistance-targetDistance) / targetDistance > 0.05) {
                     for (i = 0; i < directions.getWaypoints().length; i++)
@@ -203,7 +204,6 @@ navigator.geolocation.getCurrentPosition(successLoc, errorLoc, {
 }) 
 
 function successLoc(position) {
-    console.log(position)
     currentPosition = position
     setupMap([position.coords.longitude, position.coords.latitude])
 }
@@ -228,7 +228,6 @@ function generatePath(distanceInKm) {
     angle = Math.random() * 2.0 * Math.PI;
     currentOrigin = directions.getOrigin()
 
-    // directions.addWaypoint([127.510094,40.339851]) 
     console.log(directions)
     
     let deltaLatitude = distanceInKm * Math.sin(angle) / 110.574
@@ -275,6 +274,7 @@ function generateLoop(distanceInKm) {
 
     // Set waypoint at original destination
     wayPoint1 = directions.getDestination().geometry.coordinates
+    
     directions.addWaypoint(0, wayPoint1)
 
     // Add second waypoint
@@ -289,16 +289,17 @@ function generateLoop(distanceInKm) {
     // slope = y / x
     // new slope = -x / y
     wayPoint2 = [wayPoint1[0] + diffLat, wayPoint1[1] + diffLat * m2]  // Make an entirely different array because you can't have the same reference
-    directions.addWaypoint(1, wayPoint2)
+    console.log("OG Waypoint 2", wayPoint2)
 
+    directions.addWaypoint(1, wayPoint2);
     targetDistance = distanceInKm
-    
+
     
     currentOrigin = directions.getOrigin()
     directions.setDestination(currentOrigin.geometry.coordinates)
     console.log(directions.getWaypoints())
-}
 
+}
 // Get references to input field and button
 const pathDistanceInput = document.getElementById('pathDistance');
 const generatePathButton = document.getElementById('generatePathButton');
@@ -364,3 +365,39 @@ function checkTripType() {
         return (loopPath == true); // Round Trip is active
     }
 }
+
+
+function findNearestIntersection([latitude, longitude]){
+    const tomtom_url = `https://api.tomtom.com/search/2/reverseGeocode/crossStreet/${latitude},${longitude}.json?key=${apiKey}`;
+    const xhr = new XMLHttpRequest();
+    xhr.open("GET", tomtom_url);
+    xhr.responseType = "json";
+    
+    xhr.onload = () => {
+        if (xhr.status >= 200 && xhr.status < 300) {
+            const data = xhr.response;
+            if (data.addresses && data.addresses.length > 0) {
+                const position = data.addresses[0].position;
+                const [newLatitude, newLongitude] = position.split(',').map(Number);
+            } else {
+                callback('No position data found', null);
+            }
+        } else {
+            callback(`Error: ${xhr.status}`, null);
+        }
+    };
+    
+    xhr.onerror = () => {
+        callback('Network error', null);
+    };
+    
+    xhr.send();
+}
+
+// Usage
+
+
+// https://api.tomtom.com/search/2/reverseGeocode/crossStreet/43.87358493215979,-79.0653985402112.json?key=IfBrLjGdiUn8HHect41C5cB6VtmDopDA
+// https://api.tomtom.com/search/2/reverseGeocode/52.157831,5.223776.json?key=IfBrLjGdiUn8HHect41C5cB6VtmDopDA
+
+// 43.818832113478365, -79.37708480625693
